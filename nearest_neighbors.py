@@ -37,13 +37,16 @@ class NN:
     def rand_neighbors(self, query, n, thresh):
         assert n>=1 and n<100, "n must be in range(1,100)"
 
-        most_similars, scores = self.nn_search(query, 100)
+        most_similars, scores = self.nn_search(query, 201)
         neighbors = []
-        for token, score in zip(most_similars, scores):
+        intruder= most_similars[-1]
+        for token, score in zip(most_similars[:-1], scores[:-1]):
             if token != query and score > thresh:
                 neighbors.append(token)
-        neighbors = np.random.choice(neighbors, size=n, replace=False)
-        return list(neighbors)
+        if n <= len(neighbors):
+            neighbors = np.random.choice(neighbors, size=n, replace=False)
+            return list(neighbors), intruder
+        return [], None
 
 class NaiveNN(NN):
 
