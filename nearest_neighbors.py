@@ -1,7 +1,9 @@
 import json
 
 import numpy as np
+
 from utils import normalize_rows
+
 
 class NN:
     def __init__(self, vectors_path, vocab_path, normalize=True):
@@ -35,11 +37,11 @@ class NN:
         return np.random.choice(list(self.token2id.keys()))
 
     def rand_neighbors(self, query, n, thresh):
-        assert n>=1 and n<100, "n must be in range(1,100)"
+        assert n >= 1 and n < 100, "n must be in range(1,100)"
 
         most_similars, scores = self.nn_search(query, 201)
         neighbors = []
-        intruder= most_similars[-1]
+        intruder = most_similars[-1]
         for token, score in zip(most_similars[:10], scores[:10]):
             if token != query and score > thresh:
                 neighbors.append(token)
@@ -48,8 +50,8 @@ class NN:
             return list(neighbors), intruder
         return [], None
 
-class NaiveNN(NN):
 
+class NaiveNN(NN):
     def nn_search(self, q_token, top_k):
         cosine = lambda a, db: np.dot(a, self.db.T)
         vec = self.get_query_vec(q_token)
@@ -84,6 +86,7 @@ class AproximateNN(NN):
 nn = NaiveNN
 try:
     import faiss
+
     nn = AproximateNN
 except:
     print("Warning: Faiss not supported")
