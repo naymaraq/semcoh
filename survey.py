@@ -1,6 +1,7 @@
 import argparse
 from nearest_neighbors import nn
 from numpy.random import shuffle
+import pyfiglet
 
 class Question:
 
@@ -86,7 +87,8 @@ ARG.add_argument('--n', type=bool, default=True, help='Normalize')
 
 ARG = ARG.parse_args()
 
-
+ascii_banner = pyfiglet.figlet_format("Coherence of Semantic Space")
+print(ascii_banner)
 survey = Survey(ARG.v, ARG.i, ARG.f, ARG.n)
 survey.start_survey()
 

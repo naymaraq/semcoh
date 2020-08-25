@@ -40,7 +40,7 @@ class NN:
         most_similars, scores = self.nn_search(query, 201)
         neighbors = []
         intruder= most_similars[-1]
-        for token, score in zip(most_similars[:-1], scores[:-1]):
+        for token, score in zip(most_similars[:10], scores[:10]):
             if token != query and score > thresh:
                 neighbors.append(token)
         if n <= len(neighbors):
