@@ -4,9 +4,8 @@ import numpy as np
 from utils import normalize_rows
 
 class NN:
-    def __init__(self, topk, vectors_path, vocab_path, normalize=True):
+    def __init__(self, vectors_path, vocab_path, normalize=True):
 
-        self.topk = topk
         self.vectors_path = vectors_path
         self.vocab_path = vocab_path
         self.normalize = normalize
@@ -37,20 +36,22 @@ class NN:
 
     def rand_neighbors(self, query, n, thresh):
         assert n>=1 and n<100, "n must be in range(1,100)"
-        most_similars, scores = self.nn_search(query)
+
+        most_similars, scores = self.nn_search(query, 100)
         neighbors = []
         for token, score in zip(most_similars, scores):
             if token != query and score > thresh:
                 neighbors.append(token)
-        return neighbors
+        neighbors = np.random.choice(neighbors, size=n, replace=False)
+        return list(neighbors)
 
 class NaiveNN(NN):
 
-    def nn_search(self, q_token):
+    def nn_search(self, q_token, top_k):
         cosine = lambda a, db: np.dot(a, self.db.T)
         vec = self.get_query_vec(q_token)
         scores = cosine(vec, self.db)[0]
-        indecies = scores.argsort()[-self.topk:][::-1]
+        indecies = scores.argsort()[-topk:][::-1]
         D = [self.id2token[i] for i in indecies]
         I = [scores[i] for i in indecies]
         I = np.squeeze(I)
@@ -68,9 +69,9 @@ class AproximateNN(NN):
         self.db = np.ascontiguousarray(self.db, dtype=np.float32)
         self.index.add(self.db)
 
-    def nn_search(self, q_token):
+    def nn_search(self, q_token, topk):
         vec = self.get_query_vec(q_token)
-        I, D = self.index.search(vec.reshape(1, -1), self.topk)
+        I, D = self.index.search(vec.reshape(1, -1), topk)
         I = np.squeeze(I)
         D = np.squeeze(D)
         D = [self.id2token[i] for i in D]
