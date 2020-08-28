@@ -6,11 +6,12 @@ from utils import normalize_rows
 
 
 class NN:
-    def __init__(self, vectors_path, vocab_path, normalize=True):
+    def __init__(self, vectors_path, vocab_path, query_list_path=None, normalize=True):
 
         self.vectors_path = vectors_path
         self.vocab_path = vocab_path
         self.normalize = normalize
+        self.query_list_path = query_list_path
 
         self.load_vocab()
         self.load_vectors()
@@ -28,12 +29,17 @@ class NN:
         self.id2token = json.load(open(self.vocab_path, 'r'))
         self.id2token = {int(i): w for i, w in self.id2token.items()}
         self.token2id = {w: i for i, w in self.id2token.items()}
+        if self.query_list_path:
+            with open(self.query_list_path) as f:
+                self.query_list = f.read().strip().split('\n')
 
     def get_query_vec(self, token):
         ix = self.token2id[token]
         return self.db[ix].reshape(1, -1)
 
     def rand_query(self):
+        if self.query_list:
+            return np.random.choice(self.query_list)
         return np.random.choice(list(self.token2id.keys()))
 
     def rand_neighbors(self, query, n, thresh):

@@ -33,8 +33,8 @@ class Question:
             return to_show
 
 class Survey:
-    def __init__(self, vectors_path, vocab_path, freqs, normalize):
-        self.nn_obj = nn(vectors_path, vocab_path, normalize=normalize)
+    def __init__(self, vectors_path, vocab_path, freqs, query_list_path, normalize):
+        self.nn_obj = nn(vectors_path, vocab_path, query_list_path, normalize=normalize)
         self.questions = []
 
     def survey_step(self):
@@ -49,10 +49,13 @@ class Survey:
 
     def start_survey(self):
         try:
+            q_index = 0
             while True:
                 q = self.survey_step()
                 if q:
-                    print('-' * 100)
+                    print()
+                    print(f"Question {q_index}.")
+                    print(f'-' * 80)
                     print(q)
                     answer = get_answer()
                     if answer == 'n':
@@ -60,6 +63,7 @@ class Survey:
                     else:
                         q.answer = answer
                         self.questions.append(q)
+                    q_index += 1
 
         except KeyboardInterrupt:
             if len(self.questions):
