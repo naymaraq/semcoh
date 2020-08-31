@@ -5,6 +5,37 @@ import numpy as np
 from utils import normalize_rows
 
 
+class RelatedPairs:
+    def __init__(self, query_list_path=None, relateded_pairs_path=None):
+        self.query_list_path = query_list_path
+        self.relateded_pairs_path = relateded_pairs_path
+        self.load()
+
+    def load(self):
+        if self.relateded_pairs_path:
+            with open(self.relateded_pairs_path) as f:
+                self.pairs = f.read().strip().split('\n')
+                self.pairs = [pair.split() for pair in self.pairs]
+                self.current_pair_index = 0
+
+        if self.query_list_path:
+            with open(self.query_list_path) as f:
+                self.query_list = f.read().strip().split('\n')
+
+    def next_pair(self):
+
+        if self.relateded_pairs_path:
+            self.current_pair_index += 1
+            if self.current_pair_index - 1 < len(self.pairs):
+                return self.pairs[self.current_pair_index - 1]
+            return []
+
+        if self.query_list_path:
+            return [np.random.choice(self.query_list), np.random.choice(self.query_list), None]
+
+        return []
+
+
 class NN:
     def __init__(self, vectors_path, vocab_path, query_list_path=None, normalize=True):
 

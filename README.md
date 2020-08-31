@@ -1,2 +1,2 @@
 # semcoh
-Console tool for semantic coherence evaluation
+Console tools for semantic coherence and relatedness evaluation
